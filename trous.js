@@ -423,7 +423,7 @@ function synthStats() {
 
 function printUnit(value) {
     if (this.metric) {
-        return (Math.round(value));
+        return (value.toFixed(1));
     }
     else {
         return (value.toFixed(2));
