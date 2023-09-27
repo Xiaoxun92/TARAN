@@ -191,6 +191,23 @@ function displayTargetsInfo() {
     while (infocont.lastChild) {
         infocont.removeChild(infocont.lastChild);
     }
+
+    if (samevik.dist) {
+        // append "add target" row
+        sheetel = document.createElement('table');
+        sheetel.className = "table-info table-info-target";
+        tabody = document.createElement("tbody");
+        groupel = document.createElement('tr');
+        groupel.id = 'table-info-add-target';
+        cell = document.createElement('th');
+        celltext = document.createTextNode(LSTX('targetadd'));
+        cell.className = "table-addt";
+        cell.appendChild(celltext);
+        groupel.appendChild(cell);
+        tabody.appendChild(groupel);
+        sheetel.appendChild(tabody);
+        infocont.appendChild(sheetel);
+    }
     
     var sheetel = null;
     var tabody = null;
@@ -272,23 +289,6 @@ function displayTargetsInfo() {
         sheetel.appendChild(tabody);
         infocont.appendChild(sheetel);
     } // sheets loop
-
-    if (samevik.dist) {
-        // append "add target" row
-        sheetel = document.createElement('table');
-        sheetel.className = "table-info table-info-target";
-        tabody = document.createElement("tbody");
-        groupel = document.createElement('tr');
-        groupel.id = 'table-info-add-target';
-        cell = document.createElement('th');
-        celltext = document.createTextNode(LSTX('targetadd'));
-        cell.className = "table-addt";
-        cell.appendChild(celltext);
-        groupel.appendChild(cell);
-        tabody.appendChild(groupel);
-        sheetel.appendChild(tabody);
-        infocont.appendChild(sheetel);
-    }
 } // function displayTargetsInfo()
 
 function listenerTargetinfoClick(evt) {

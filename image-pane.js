@@ -293,8 +293,10 @@ function drawScreen(selectall) {
         canvas.height = imgObj.height * zoom; 
         context.drawImage(imgObj, 0, 0, canvas.width, canvas.height);
         drawScale();
-        drawPOA(selectall);
-        drawShots(selectall);
+        if (ctrlmode !== 'addshot') {    // hide existing dots to give the user a clear view of the target
+            drawPOA(selectall);
+            drawShots(selectall);
+        }
         drawStats(selectall);
         if (selectall || (showinfoboxes && (ctrlmode == 'base')) ) {
             drawStatsInfoboxes();
@@ -574,9 +576,9 @@ function setCtrlMode(mode) {
             hideElement('toolbar-target-group');
             hideElement('toolbar-target-shot');
         }
-        unbrightButton('tb-btn-scale');
-        unbrightButton('tb-btn-group-add');
-        unbrightButton('tb-btn-shot-add');
+        ungrayOutButton('tb-btn-scale');
+        ungrayOutButton('tb-btn-group-add');
+        ungrayOutButton('tb-btn-shot-add');
         
         canvas.removeEventListener('mousedown', listenerMouseDown);
         canvas.addEventListener('click', listenerSelectGroup, false);
@@ -588,7 +590,7 @@ function setCtrlMode(mode) {
         hideElement('toolbar-target-group');
         hideElement('toolbar-target-shot');
 
-        brightButton('tb-btn-scale');
+        grayOutButton('tb-btn-scale');
         hideElement('input-scale');
         hideElement('input-scale-units');
         unhideElement('tb-btn-scale-confirm');
@@ -601,7 +603,7 @@ function setCtrlMode(mode) {
         hideElement('toolbar-target-group');
         hideElement('toolbar-target-shot');
 
-        brightButton('tb-btn-scale');
+        grayOutButton('tb-btn-scale');
         unhideElement('input-scale');
         unhideElement('input-scale-units');
         unhideElement('tb-btn-scale-confirm');
@@ -614,7 +616,7 @@ function setCtrlMode(mode) {
         unhideElement('toolbar-target-group');
         hideElement('toolbar-target-shot');
 
-        brightButton('tb-btn-group-add');
+        grayOutButton('tb-btn-group-add');
         hideElement('tb-btn-group-del');
         unhideElement('tb-btn-groupadd-confirm');
         unhideElement('tb-btn-groupadd-cancel');
@@ -626,7 +628,7 @@ function setCtrlMode(mode) {
         hideElement('toolbar-target-group');
         unhideElement('toolbar-target-shot');
 
-        brightButton('tb-btn-shot-add');
+        grayOutButton('tb-btn-shot-add');
         hideElement('tb-btn-shot-del');
         unhideElement('tb-btn-shotadd-confirm');
         unhideElement('tb-btn-shotadd-cancel');
@@ -794,6 +796,7 @@ function listenerBtnShotAdd(evt) {
     }
     getPoint(-1, 'rgba(128, 128, 255, 0.5)', 'white');
     setCtrlMode('addshot');
+    drawScreen();
 } // function listenerBtnShotAdd(evt)
 
 function listenerBtnShotAddConfirm(evt) {
@@ -894,6 +897,46 @@ function initImgPane() {
     document.getElementById('groups-info-container').addEventListener('click', listenerGroupsInfoClick, false);
 
     document.getElementById('target-show-infoboxes-check').addEventListener('change', listenerInfoboxesToggle, false);
+
+    // keyboard shortcuts
+    document.addEventListener('keydown', function (e) {
+        switch (e.key) {
+            case 'g':
+                // 'g' -> add a group
+                if (ctrlmode === 'base') {
+                    if (csheet.scale) { // scale set
+                        listenerBtnGroupAdd(e);
+                    }
+                }
+                break;
+            case 's':
+                // 's' -> add a shot
+                if (ctrlmode === 'base') {
+                    if (csheet.scale) { // scale set
+                        if (cgroup) { // group selected
+                            listenerBtnShotAdd(e);
+                        }
+                    }
+                }
+                break;
+            case 'a':
+                // 'a' -> add/confirm
+                switch (ctrlmode) {
+                    case 'scale1':
+                    case 'scale2':
+                    case 'scale3':
+                        listenerBtnScaleConfirm(e);
+                        break;
+                    case 'addgroup':
+                        listenerBtnGroupAddConfirm(e);
+                        break;
+                    case 'addshot':
+                        listenerBtnShotAddConfirm(e);
+                        break;
+                }
+                break;
+        }
+    });
     
     setCtrlMode('none');
 } // function initImgPane()
