@@ -40,7 +40,7 @@ LSTR['ru'] = {
     defaultnewdescription: '[безымянный прожэкт]',
 
     inputsanitydesc: 'как назовём прожэкт?',
-    inputsanitydistinvalid: 'от 5 до 3000',
+    inputsanitydistinvalid: 'от 3 до 3000',
     inputsanitycalinvalid: 'калибр > 0 и до 20мм / 0.8"',
     inputsanityyousure: 'что, правда?',
     inputsanityok: 'OK',
