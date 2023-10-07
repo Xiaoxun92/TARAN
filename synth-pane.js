@@ -49,8 +49,8 @@ function handlerWindowResizePaneSynth(evt) {
     
     var panel = document.getElementById('pane-content-analysis');
     panel.style.width = (window.innerWidth - 96) + 'px';
-    
-    synthSVG.setScale();
+
+    synthSVG.makeAll();
     synthSVG.applyView();
 
     var sliderbox = document.getElementById('synth-slider-box');
@@ -96,6 +96,7 @@ function setScaleSVG(boxwidth, boxheight) {
         Math.abs(samevik.poi.y),
         samevik.sigma * 3.03 // R99 circle
     );
+    this.maxd += samevik.cal / 2;   // if the maxd is relatively small comparing to the caliber, the size of the shots will look very large. Leave some space for that. 
     this.scale = half / this.maxd / 1.05; // pixels/mm
         // to fit the target box area with 5% margin
         
@@ -124,9 +125,10 @@ function applyViewSVG(savetofile) {
     } // nothing to do
 
     unhideElement('synth-slider-box');
-    
-    
-    if (this.r95SVG.show) { svg = svg + this.r95SVG.s; }
+
+    svg = svg + this.r95SVG.s;
+    svg = svg + this.tgtSVG;
+
     if (this.moaSVG.show) { svg = svg + this.moaSVG.s; }
     if (this.a5xSVG.show) { svg = svg + this.a5xSVG.s; }
     if (this.a10xSVG.show) { svg = svg + this.a10xSVG.s; }
@@ -135,7 +137,6 @@ function applyViewSVG(savetofile) {
     if (this.r99SVG.show) { svg = svg + this.r99SVG.s; }
     
     if (this.gridSVG.show) { svg = svg + this.gridSVG.s; }
-    svg = svg + this.tgtSVG;
     
     svg = svg + this.alsoSVG;
     
@@ -159,6 +160,7 @@ function applyViewSVG(savetofile) {
     }
     else {
         this.domel.innerHTML = svg;
+        if (document.getElementById('synth-btn-shot')) { document.getElementById('synth-btn-shot').addEventListener('click', listenerSynthClickShot, false); }
         if (document.getElementById('synth-btn-sigma')) { document.getElementById('synth-btn-sigma').addEventListener('click', listenerSynthClickSigma, false); }
         if (document.getElementById('synth-btn-r50')) { document.getElementById('synth-btn-r50').addEventListener('click', listenerSynthClickR50, false); }
         if (document.getElementById('synth-btn-d5x')) { document.getElementById('synth-btn-d5x').addEventListener('click', listenerSynthClickD5x, false); }
@@ -175,8 +177,8 @@ function makeAllSVG() {
     if (!samevik.pts.length) { return ""; } // nothing to do
     
     this.setScale();
-    
-    var lwu = (samevik.metric) ? 1 : 0.04; // line width unit; 1mm ~= 0.04"
+
+    var lwu = 3 / this.scale; // line width unit
     
     // R95
     this.r95SVG.s = '<circle cx="' + samevik.poi.x +'" cy="' + samevik.poi.y + '" r="' + (samevik.sigma * 2.45 * samevik.confidenceUpper) + '" stroke="none" stroke-width="' + lwu + '" fill="#688E23" opacity="0.25" />' + "\n";
@@ -187,28 +189,28 @@ function makeAllSVG() {
 
     // sigma
     this.sigmaSVG.s = '<circle cx="' + samevik.poi.x +'" cy="' + samevik.poi.y +
-        '" r="' + samevik.sigma + '" stroke="#707070" stroke-width="' + (0.25 * lwu) + '" fill="none" opacity="1" />' + "\n";
+        '" r="' + samevik.sigma + '" stroke="#707070" stroke-width="' + lwu + '" fill="none" opacity="1" />' + "\n";
 
     // R50
     this.r50SVG.s = '<circle cx="' + samevik.poi.x +'" cy="' + samevik.poi.y +
-        '" r="' + (samevik.sigma * 1.18) + '" stroke="#707070" stroke-width="' + (0.25 * lwu) + '" fill="none" opacity="1" />' + "\n";
+        '" r="' + (samevik.sigma * 1.18) + '" stroke="#707070" stroke-width="' + lwu + '" fill="none" opacity="1" />' + "\n";
     
     // R99
     this.r99SVG.s = '<circle cx="' + samevik.poi.x +'" cy="' + samevik.poi.y +
-        '" r="' + (samevik.sigma * 3.03) + '" stroke="#707070" stroke-width="' + (0.25 * lwu) + '" fill="none" opacity="1" />' + "\n";
+        '" r="' + (samevik.sigma * 3.03) + '" stroke="#707070" stroke-width="' + lwu + '" fill="none" opacity="1" />' + "\n";
 
     // A5
     this.a5xSVG.s = '<circle cx="' + samevik.poi.x +'" cy="' + samevik.poi.y +
-        '" r="' + (samevik.sigma * 3.06 / 2) + '" stroke="#707070" stroke-width="' + (0.25 * lwu) + '" fill="none" opacity="1" />' + "\n";
+        '" r="' + (samevik.sigma * 3.06 / 2) + '" stroke="#707070" stroke-width="' + lwu + '" fill="none" opacity="1" />' + "\n";
 
     // A10
     this.a10xSVG.s = '<circle cx="' + samevik.poi.x +'" cy="' + samevik.poi.y +
-        '" r="' + (samevik.sigma * 3.79 / 2) + '" stroke="#707070" stroke-width="' + (0.25 * lwu) + '" fill="none" opacity="1" />' + "\n";
+        '" r="' + (samevik.sigma * 3.79 / 2) + '" stroke="#707070" stroke-width="' + lwu + '" fill="none" opacity="1" />' + "\n";
 
     // MOA circle    
     var moar = (samevik.metric) ? (0.2908 / 2 * samevik.dist) : (1.047 / 200 * samevik.dist);
     this.moaSVG.s = '<circle cx="' + samevik.poi.x +'" cy="' + samevik.poi.y +
-        '" r="' + moar + '" stroke="#DBA737" stroke-width="' + (0.25 * lwu) + '" stroke-dasharray="' + (2 * lwu) + ',' + (2 * lwu) + '" fill="none" opacity="1" />' + "\n";
+        '" r="' + moar + '" stroke="#DBA737" stroke-width="' + lwu + '" stroke-dasharray="' + (2 * lwu) + ',' + (2 * lwu) + '" fill="none" opacity="1" />' + "\n";
     this.moaSVG.show = true;
 
     // grid + axis
@@ -234,25 +236,39 @@ function makeAllSVG() {
         this.gridSVG.s = this.gridSVG.s + '<line x1="' + (samevik.poi.x - this.maxd) + '" y1="' + (samevik.poi.y + i * gstep) + '" x2="' + (samevik.poi.x +this.maxd) + '" y2="' + (samevik.poi.y + i * gstep) + '" style="opacity:0.5;stroke:black;stroke-width:' + (linewidth * lwu) + '" />' + "\n";
         this.gridSVG.s = this.gridSVG.s + '<line x1="' + (samevik.poi.x + i * gstep) + '" y1="' + (samevik.poi.y -this.maxd) + '" x2="' + (samevik.poi.x + i * gstep) + '" y2="' + (samevik.poi.y +this.maxd) + '" style="opacity:0.5;stroke:black;stroke-width:' + (linewidth * lwu) + '" />' + "\n";
     }
-    
-    // POI confidence interval
-    this.tgtSVG = '<ellipse cx="' + samevik.poi.x +'" cy="' + samevik.poi.y +
-            '" rx="' + samevik.poici.x + '" ry="' + samevik.poici.y + '" fill="orange" opacity="0.25" />' + "\n";
-    // POI
-    this.tgtSVG = this.tgtSVG + '<circle cx="' + samevik.poi.x +'" cy="' + samevik.poi.y +
-            '" r="' + samevik.cal/4 + '" stroke="black" stroke-width="' + (0.5 * lwu) + '" fill="orange" opacity="1"/>' + "\n";
-            
-    // POA
-    this.tgtSVG = this.tgtSVG + '<circle cx="' + 0 +'" cy="' + 0 +
-            '" r="' + samevik.cal/4 + '" stroke="black" stroke-width="' + (0.5 * lwu) + '" fill="red" />' + "\n";
+
+    this.tgtSVG = '';
+
     // shots
     for (var i = 0; i < samevik.pts.length; i++) {
-        this.tgtSVG = this.tgtSVG + '<circle cx="' + samevik.pts[i].x +'" cy="' + samevik.pts[i].y +
-                '" r="' + samevik.cal/2 + '" stroke="white" stroke-width="' + (0.5 * lwu) + '" fill="blue" opacity="0.5" />' + "\n";
+        if (this.shotOpacity > 0) {
+            // hole
+            this.tgtSVG = this.tgtSVG + '<circle cx="' + samevik.pts[i].x + '" cy="' + samevik.pts[i].y +
+                '" r="' + samevik.cal / 2 + '" stroke="white" stroke-width="' + lwu + '" fill="blue" opacity="' + SynthSVG.SHOT_OPACITIES[this.shotOpacity] + '" />' + "\n";
+        } else {
+            // center
+            this.tgtSVG = this.tgtSVG + '<circle cx="' + samevik.pts[i].x + '" cy="' + samevik.pts[i].y +
+                '" r="' + lwu + '" stroke="none" stroke-width="' + lwu + '" fill="black" opacity="0.5" />' + "\n";
+        }
     }
+
+    // POI confidence interval
+    this.tgtSVG = this.tgtSVG + '<ellipse cx="' + samevik.poi.x +'" cy="' + samevik.poi.y +
+            '" rx="' + samevik.poici.x + '" ry="' + samevik.poici.y + '" fill="orange" opacity="0.25" />' + "\n";
+    // POI
+    //this.tgtSVG = this.tgtSVG + '<circle cx="' + samevik.poi.x + '" cy="' + samevik.poi.y +
+    //    '" r="' + 3 * lwu + '" stroke="black" stroke-width="' + (0.5 * lwu) + '" fill="orange" opacity="0.75"/>' + "\n";
+    this.tgtSVG = this.tgtSVG + '<line x1="' + (samevik.poi.x - 3 * lwu * 0.7) + '" y1="' + (samevik.poi.y + 3 * lwu * 0.7) +
+        '" x2="' + (samevik.poi.x + 3 * lwu * 0.7) + '" y2="' + (samevik.poi.y - 3 * lwu * 0.7) + '" stroke="black" stroke-width="' + lwu + '"/>' + "\n";
+    this.tgtSVG = this.tgtSVG + '<line x1="' + (samevik.poi.x - 3 * lwu * 0.7) + '" y1="' + (samevik.poi.y - 3 * lwu * 0.7) +
+        '" x2="' + (samevik.poi.x + 3 * lwu * 0.7) + '" y2="' + (samevik.poi.y + 3 * lwu * 0.7) + '" stroke="black" stroke-width="' + lwu + '"/>' + "\n";
+            
+    // POA
+    this.tgtSVG = this.tgtSVG + '<circle cx="0" cy="0" r="' + 3 * lwu + '" stroke="black" stroke-width="' + (0.75 * lwu) + '" fill="red"  opacity="0.75"/>' + "\n";
+    this.tgtSVG = this.tgtSVG + '<line x1="0" y1="' + (-5 * lwu) + '" x2="0" y2="' + 5 * lwu + '" stroke="black" stroke-width="' + (0.75 * lwu) + '" />' + "\n";
+    this.tgtSVG = this.tgtSVG + '<line x1="' + (-5 * lwu) + '" y1="0" x2="' + 5 * lwu + '" y2="0" stroke="black" stroke-width="' + (0.75 * lwu) + '" />' + "\n";
     
     // Summary box
-    
     var projname = samevik.description.replace(/[^a-z0-9_\-\s]/gi, '_').substr(0,16);
     if (!projname) { projname = 'BFG 9000'; }
     
@@ -309,9 +325,16 @@ function makeAllSVG() {
         ' <path stroke-linejoin="miter" d="m11.381,253.66,327.24,0" stroke-dashoffset="0" stroke="#000" stroke-linecap="butt" stroke-miterlimit="4" stroke-dasharray="1, 1" stroke-width="1" fill="none"/>' + "\n" +
         ' <path stroke-linejoin="miter" d="m11.381,292.68,327.24,0" stroke-dashoffset="0" stroke="#000" stroke-linecap="butt" stroke-miterlimit="4" stroke-dasharray="1, 1" stroke-width="1" fill="none"/>' + "\n" +
         ' <path stroke-linejoin="miter" d="m11.381,331.7,327.24,0" stroke-dashoffset="0" stroke="#000" stroke-linecap="butt" stroke-miterlimit="4" stroke-dasharray="1, 1" stroke-width="1" fill="none"/>' + "\n" +
+        ' <g id="synth-btn-shot" cursor="pointer" transform="translate(0,-460)">' + "\n" + // shot count circle
+        '  <rect fill-opacity="0.12549" height="30" width="30" stroke="#000" y="562.36" x="310" stroke-width="1" fill="#000"/>' + "\n" +
+        (this.shotOpacity === 0 ?
+            '  <circle cx="325" cy="577.5" r="2" fill="black" />' + "\n" :
+            '  <circle cx="325" cy="577.5" r="13" fill="rgba(0, 128, 0, ' + this.shotOpacity / (SynthSVG.SHOT_OPACITIES.length - 1) + ')" />' + "\n"
+        ) +
+        ' </g>' + "\n" +
         ' <g id="synth-btn-sigma" cursor="pointer" transform="translate(0,-382.9621)">' + "\n" + // sigma circle
         '  <rect fill-opacity="0.12549" height="30" width="30" stroke="#000" y="562.36" x="310" stroke-width="1" fill="#000"/>' + "\n" +
-        '  <path fill="' + ( (synthSVG.sigmaSVG.show) ? '#008000' : '#FFFFFF') + '" d="m337.64,579.36c0,5.5789-5.1445,10.102-11.49,10.102-6.346,0-11.49-4.5226-11.49-10.102,0-5.5789,5.1445-10.102,11.49-10.102,6.346,0,11.49,4.5226,11.49,10.102z" transform="matrix(1.0878566,0,0,1.2374369,-29.80771,-139.55719)"/>' + "\n" +
+        '  <path fill="' + ((synthSVG.sigmaSVG.show) ? '#008000' : '#FFFFFF') + '" d="m337.64,579.36c0,5.5789-5.1445,10.102-11.49,10.102-6.346,0-11.49-4.5226-11.49-10.102,0-5.5789,5.1445-10.102,11.49-10.102,6.346,0,11.49,4.5226,11.49,10.102z" transform="matrix(1.0878566,0,0,1.2374369,-29.80771,-139.55719)"/>' + "\n" +
         ' </g>' + "\n" +
 /*        ' <g id="synth-btn-d10x" cursor="pointer" transform="translate(0,-264.91054)">' + "\n" + // D10x circle
         '  <rect fill-opacity="0.12549" height="30" width="30" stroke="#000" y="562.36" x="310" stroke-width="1" fill="#000"/>' + "\n" +
@@ -382,19 +405,15 @@ function makeAllSVG() {
         '  <tspan y="399.88965" x="253.14">' + samevik.printInMOA(samevik.sigma * 3.03) + '</tspan>' + "\n" +
         ' </text>' + "\n" +
         ' <text style="writing-mode:lr-tb;text-anchor:end;text-align:end;" font-family="sans-serif" font-size="24px" y="69.947632" x="315.96649" font-weight="bold" fill="#000000">' + "\n" +
-        '  <tspan y="69.947632" x="315.96649">' + samevik.dist + "" + sUnitsDist() + '</tspan>' + "\n" +
+        '  <tspan y="69.947632" x="280">' + samevik.dist + "" + sUnitsDist() + '</tspan>' + "\n" +
         ' </text>' + "\n" +
         ' <text style="writing-mode:lr-tb;text-anchor:end;text-align:end;" font-family="sans-serif" font-size="24px" y="98.296829" x="315.96649" font-weight="bold" fill="#000000">' + "\n" +
-        '  <tspan y="98.296829" x="315.96649">' + samevik.cal + sUnitsLen() + '</tspan>' + "\n" +
+        '  <tspan y="98.296829" x="280">' + samevik.cal + sUnitsLen() + '</tspan>' + "\n" +
         ' </text>' + "\n" +
         ' <text style="writing-mode:lr-tb;text-anchor:end;text-align:end;" font-family="sans-serif" font-size="24px" y="126.64616" x="315.96649" font-weight="bold" fill="#000000">' + "\n" +
-        '  <tspan y="126.64616" x="315.96649">' + samevik.pts.length + '</tspan>' + "\n" +
+        '  <tspan y="126.64616" x="280">' + samevik.pts.length + '</tspan>' + "\n" +
         ' </text>' + "\n" +
-        ' <text style="writing-mode:lr-tb;text-anchor:end;text-align:end;" font-family="sans-serif" font-size="px" y="480.52219" x="582.32599" font-weight="normal" fill="#000000">' + "\n" +
-        '  <tspan y="480.52219" x="329.56366" font-size="24px" style="text-anchor:end;text-align:end;">' + "\n" +
-        '   <tspan style="text-anchor:end;text-align:end;" font-weight="bold">' + LSTX('avgpoi') + '</tspan>' + "\n" +
-        '  </tspan>' + "\n" +
-        ' </text>' + "\n" +
+        ' <text x="75" y="480.52219" font-family="sans-serif" font-size="24px" font-weight="bold" fill="#000000" style="writing-mode:lr-tb;text-anchor:start;text-align:start;">' + LSTX("avgpoi") + '</text>' + "\n" +
         ' <text style="writing-mode:lr-tb;text-anchor:start;text-align:start;" font-family="sans-serif" font-size="px" y="590.79425" x="9.462182" font-weight="normal" fill="#000000">' + "\n" +
         '  <tspan font-size="24px" y="590.79425" x="9.462182" font-weight="bold">' + LSTX('grid') + ':</tspan>' + "\n" +
         ' </text>' + "\n" +
@@ -416,13 +435,16 @@ function makeAllSVG() {
         '   <tspan stroke-width="0.5" stroke-dasharray="none" stroke="#ffffff" stroke-miterlimit="4" y="541.09851" x="249.29579" font-weight="bold">¼MOA</tspan>' + "\n" +
         '  </text>' + "\n" +
         ' </g>' + "\n" +
-        ' <path d="m48.468,621.02a10.056,10.056,0,0,1,-20.111,0,10.056,10.056,0,1,1,20.111,0z" stroke="#000" stroke-dasharray="none" stroke-miterlimit="4" stroke-width="2.49999952" fill="#F00"/>' + "\n" +
+        ' <circle cx="41" cy="621.02" r="10.056" stroke="#000" stroke-width="2.5" fill="#F00" />' + "\n" +
+        ' <line x1="41" y1="605.936" x2="41" y2="636.104" stroke="#000" stroke-width="2.5" />' + "\n" +
+        ' <line x1="25.916" y1="621.02" x2="56.084" y2="621.02" stroke="#000" stroke-width="2.5" />' + "\n" +
         ' <g transform="translate(-0.06420803,4.0996807)" stroke="#000" stroke-dasharray="none" stroke-miterlimit="4" fill="#ffa500">' + "\n" +
-        '  <rect opacity="0.25" stroke-dashoffset="0" height="30" width="50" y="453.82" x="16.429" stroke-width="1"/>' + "\n" +
-        '  <path d="m51.485,468.82a10.056,10.056,0,0,1,-20.111,0,10.056,10.056,0,1,1,20.111,0z" stroke-width="2.49999952"/>' + "\n" +
+        '  <ellipse cx="41.429" cy="468.82" rx="25" ry="15" opacity="0.25" stroke-dashoffset="0" stroke-width="1"/>' + "\n" +
+        '  <line x1="34.895" y1="461.715" x2="49.105" y2="475.925" stroke-width="2.5" />' + "\n" +
+        '  <line x1="34.895" y1="475.925" x2="49.105" y2="461.715" stroke-width="2.5" />' + "\n" +
         ' </g>' + "\n" +
         ' <text style="writing-mode:lr-tb;text-anchor:start;text-align:start;" font-family="sans-serif" font-size="px" y="629.96033" x="59.275055" font-weight="normal" fill="#000000">' + "\n" +
-        '  <tspan y="629.96033" x="59.275055" font-size="24px">' + LSTX('poatargetcentre') + '</tspan>' + "\n" +
+        '  <tspan y="629.96033" x="75" font-size="24px" font-weight="bold">' + LSTX('poatargetcentre') + '</tspan>' + "\n" +
         ' </text>' + "\n" +
         ' <path stroke-linejoin="miter" d="m11.381,452.37,327.24,0" stroke-dashoffset="0" stroke="#000" stroke-linecap="butt" stroke-miterlimit="4" stroke-dasharray="1, 1" stroke-width="1" fill="none"/>' + "\n" +
         ' <path stroke-linejoin="miter" d="m11.381,602.4,327.24,0" stroke-dashoffset="0" stroke="#000" stroke-linecap="butt" stroke-miterlimit="4" stroke-dasharray="1, 1" stroke-width="1" fill="none"/>' + "\n" +
@@ -441,10 +463,10 @@ function makeAllSVG() {
         '  </text>' + "\n" +
         ' </g>' + "\n" +
         ' <text style="writing-mode:lr-tb;text-anchor:start;text-align:start;" font-family="sans-serif" font-size="px" y="512.42426" x="15.677292" font-weight="normal" fill="#000000">' + "\n" +
-        '  <tspan font-size="24px" y="512.42426" x="15.677292">V: ' + samevik.printUnit(-samevik.poi.y) + '±' + samevik.printLength(samevik.poici.y) + '</tspan>' + "\n" +
+        '  <tspan font-size="24px" y="512.42426" x="15.677292">V: ' + samevik.printUnit(-samevik.poi.y) + ' ± ' + samevik.printLength(samevik.poici.y) + '</tspan>' + "\n" +
         ' </text>' + "\n" +
         ' <text style="writing-mode:lr-tb;text-anchor:start;text-align:start;" font-family="sans-serif" font-size="px" y="543.89087" x="13.509324" font-weight="normal" fill="#000000">' + "\n" +
-        '  <tspan font-size="24px" y="543.89087" x="13.509324">H: ' + samevik.printUnit(samevik.poi.x) + '±' + samevik.printLength(samevik.poici.x) + '</tspan>' + "\n" +
+        '  <tspan font-size="24px" y="543.89087" x="13.509324">H: ' + samevik.printUnit(samevik.poi.x) + ' ± ' + samevik.printLength(samevik.poici.x) + '</tspan>' + "\n" +
         ' </text>';
     // move and scale into target canvas coordinates
     var sbscale = this.maxd * 2 / 3 / 350; // sumbox is 350 px wide, space left to the left is maxd*2/3  
@@ -535,6 +557,8 @@ function SynthSVG(domel) { // domel = containing DOM element
     this.gridSVG = { s: '', mrad: true, show: true };
     this.maxd = 0; // max distance from centre (POI) to draw on the image
 
+    this.shotOpacity = SynthSVG.SHOT_OPACITIES.length - 1;
+
     this.a5xSVG = { s: '', show: false };
     this.a10xSVG = { s: '', show: false };
     this.sigmaSVG = { s: '', show: false };
@@ -553,24 +577,36 @@ function SynthSVG(domel) { // domel = containing DOM element
     this.makeAll = makeAllSVG;
 } // SynthSVG(domel) constructor
 
+SynthSVG.SHOT_OPACITIES = [0, 0.1, 0.5];
+
 function listenerSynthSave(evt) {
     synthSVG.applyView(true);
 } // function listenerSynthSave(evt)
 
 function listenerCSVExport(evt) {
-    var csv = "ShotX,ShotY,Target,Group,Distance,Description" + "\n";
+    var csv = "ShotX,ShotY,Target,Group,Distance,Title,Comment" + "\n";
     for (var i = 0; i < samevik.pts.length; i++) {
         csv = csv + samevik.pts[i].x + ',' + samevik.pts[i].y + ',"' +
             samevik.sheets[samevik.ptstg[i].t].name + '",' +
             (samevik.ptstg[i].g+1) + ',' +
             samevik.dist + ',' +
-            samevik.description +
+            samevik.description + ',' +
+            samevik.comment +
             "\n";
     }
     var filename = samevik.description.replace(/[^a-z0-9_\-]/gi, '_').toLowerCase();
         filename = (filename) ? (filename + '.csv') : 'taran.csv';
         promptDownload(csv, filename);
 } // function listenerCSVExport(evt)
+
+function listenerSynthClickShot(evt) {
+    synthSVG.shotOpacity++;
+    if (synthSVG.shotOpacity === SynthSVG.SHOT_OPACITIES.length) {
+        synthSVG.shotOpacity = 0;
+    }
+    synthSVG.makeAll();
+    synthSVG.applyView();
+} // function listenerSynthClickShot(evt)
 
 function listenerSynthClickSigma(evt) {
     synthSVG.sigmaSVG.show = !synthSVG.sigmaSVG.show;
@@ -634,10 +670,10 @@ function listenerSliderMove(evt) {
         synthSVG.alsoSVG = '';
     }
     else {
-        var lwu = (samevik.metric) ? 1 : 0.04;
+        var lwu = 3 / synthSVG.scale; // line width unit
         synthSVG.alsoSVG = '<circle cx="' + samevik.poi.x +'" cy="' + samevik.poi.y +
-        '" r="' + q + '" stroke="#800000" stroke-width="' + (0.25 * lwu) + '" fill="none" opacity="1" />' + "\n" +
-        '<text fill="#800000" stroke="white" stroke-width="' + (0.05 * lwu) + '" font-family="sans-serif" font-weight="bold" font-size="' + (3 * lwu) + 'px" font-style="normal" font-variant="normal" text-anchor="middle" x="' + samevik.poi.x + '" y="' + (samevik.poi.y - q) + '">R' + val + '% = ' + samevik.printUnit(q) + sUnitsLen() + '</text>' + "\n";
+        '" r="' + q + '" stroke="#800000" stroke-width="' + lwu + '" fill="none" opacity="1" />' + "\n" +
+        '<text fill="#800000" stroke="white" stroke-width="' + (0.25 * lwu) + '" font-family="sans-serif" font-weight="bold" font-size="' + (10 * lwu) + 'px" font-style="normal" font-variant="normal" text-anchor="middle" x="' + samevik.poi.x + '" y="' + (samevik.poi.y - 1.1 * q) + '">R' + val + '% = ' + samevik.printUnit(q) + sUnitsLen() + '</text>' + "\n";
     }
     synthSVG.applyView();
     
