@@ -126,8 +126,8 @@ function applyViewSVG(savetofile) {
 
     unhideElement('synth-slider-box');
 
-    svg = svg + this.r95SVG.s;
     svg = svg + this.tgtSVG;
+    svg = svg + this.r95SVG.s;
 
     if (this.moaSVG.show) { svg = svg + this.moaSVG.s; }
     if (this.a5xSVG.show) { svg = svg + this.a5xSVG.s; }
@@ -179,11 +179,13 @@ function makeAllSVG() {
     this.setScale();
 
     var lwu = 3 / this.scale; // line width unit
-    
+
+    // R95 confidence margin
+    let ringRadius = samevik.sigma * 2.45 * (samevik.confidenceUpper + samevik.confidenceLower) / 2;
+    let ringWidth = samevik.sigma * 2.45 * (samevik.confidenceUpper - samevik.confidenceLower);
+    this.r95SVG.s = '<circle cx="' + samevik.poi.x + '" cy="' + samevik.poi.y +
+        '" r="' + ringRadius + '" stroke="#688E23" fill="none" stroke-width="' + ringWidth + '" opacity="0.25" />' + "\n";
     // R95
-    this.r95SVG.s = '<circle cx="' + samevik.poi.x +'" cy="' + samevik.poi.y + '" r="' + (samevik.sigma * 2.45 * samevik.confidenceUpper) + '" stroke="none" stroke-width="' + lwu + '" fill="#688E23" opacity="0.25" />' + "\n";
-    this.r95SVG.s = this.r95SVG.s + '<circle cx="' + samevik.poi.x +'" cy="' + samevik.poi.y +
-        '" r="' + (samevik.sigma * 2.45 * samevik.confidenceLower) + '" stroke="none" stroke-width="' + lwu + '" fill="white" opacity="1" />' + "\n";
     this.r95SVG.s = this.r95SVG.s + '<circle cx="' + samevik.poi.x +'" cy="' + samevik.poi.y +
         '" r="' + (samevik.sigma * 2.45) + '" stroke="#688E23" stroke-width="' + lwu + '" fill="none" opacity="1" />' + "\n";
 
