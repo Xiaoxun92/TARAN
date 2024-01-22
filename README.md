@@ -15,3 +15,9 @@ Before:
 
 After:
 ![image](https://github.com/Xiaoxun92/TARAN/assets/32814679/1cbd2182-5cce-4426-8937-48fad20d5427)
+
+Bullet hole mode: Full
+![image](https://github.com/Xiaoxun92/TARAN/assets/32814679/133419c8-0395-4db6-a03e-2e86e05ba6d7)
+
+Bullet hole mode: Transparent
+![image](https://github.com/Xiaoxun92/TARAN/assets/32814679/4e5171a0-6978-4517-ae27-ff278eefef7c)
