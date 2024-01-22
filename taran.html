@@ -86,6 +86,10 @@
                         <td><input type="number" min="0.1" max="20" step="any" value="7.62" id="proj-input-cal" /></td>
                         <td id="proj-input-cal-note"></td>
                     </tr>
+                    <tr>
+                        <th id="proj-input-comment-label">Comment:</th>
+                        <td><textarea rows="4" id="proj-input-comment"></textarea></td>
+                    </tr>
                 </tbody></table>
                 <!-- <input type="button" class="hidden" id="proj-input-btn-ok" value="OK"> -->
                 <input type="button" disabled id="proj-input-btn-ok" value="OK">
@@ -138,19 +142,19 @@
                         <input type="button" class="tb-btn-lighter" value="" id="tb-btn-scale" />
                         <input type="number" min="0.1" max="500" step="any" value="0" class="hidden" id="input-scale" />
                         <span id="input-scale-units"></span>
-                        <input type="button" class="tb-btn-lighter tb-btn-confirm" value="" id="tb-btn-scale-confirm" />
+                        <input type="button" class="tb-btn-lighter tb-btn-confirm" value="" id="tb-btn-scale-confirm" title="Add (A)" />
                         <input type="button" class="tb-btn-lighter tb-btn-cancel" value="" id="tb-btn-scale-cancel" />
                     </span>
                     <span class="toolbar-hori-btngroup" id="toolbar-target-group">
-                        <input type="button" class="tb-btn-lighter" value="" id="tb-btn-group-add" />
+                        <input type="button" class="tb-btn-lighter" value="" id="tb-btn-group-add" title="Add Group (G)" />
                         <input type="button" class="tb-btn-lighter" value="" id="tb-btn-group-del" />
-                        <input type="button" class="tb-btn-lighter tb-btn-confirm" value="" id="tb-btn-groupadd-confirm" />
+                        <input type="button" class="tb-btn-lighter tb-btn-confirm" value="" id="tb-btn-groupadd-confirm" title="Add (A)" />
                         <input type="button" class="tb-btn-lighter tb-btn-cancel" value="" id="tb-btn-groupadd-cancel" />
                     </span>
                     <span class="toolbar-hori-btngroup" id="toolbar-target-shot">
-                        <input type="button" class="tb-btn-lighter" value="" id="tb-btn-shot-add" />
+                        <input type="button" class="tb-btn-lighter" value="" id="tb-btn-shot-add" title="Add Shot (S)" />
                         <input type="button" class="tb-btn-lighter" value="" id="tb-btn-shot-del" />
-                        <input type="button" class="tb-btn-lighter tb-btn-confirm" value="" id="tb-btn-shotadd-confirm" />
+                        <input type="button" class="tb-btn-lighter tb-btn-confirm" value="" id="tb-btn-shotadd-confirm" title="Add (A)" />
                         <input type="button" class="tb-btn-lighter tb-btn-cancel" value="" id="tb-btn-shotadd-cancel" />
                     </span>
                 </div>

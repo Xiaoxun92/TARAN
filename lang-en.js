@@ -40,7 +40,7 @@ LSTR['en'] = {
     defaultnewdescription: '[noname project]',
     
     inputsanitydesc: 'how\'d you call this project?',
-    inputsanitydistinvalid: 'input distance between 5 and 3000',
+    inputsanitydistinvalid: 'input distance between 3 and 3000',
     inputsanitycalinvalid: 'input calibre > 0 up to 20mm / 0.8"',
     inputsanityyousure: 'for real?',
     inputsanityok: 'OK',

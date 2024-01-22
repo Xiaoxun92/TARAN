@@ -40,7 +40,7 @@ LSTR['it'] = {
     defaultnewdescription: '[progetto NessunNome]',
     
     inputsanitydesc: 'Come vuoi chiamare questo progetto?',
-    inputsanitydistinvalid: 'digita la distanza tra 5 e 3000',
+    inputsanitydistinvalid: 'digita la distanza tra 3 e 3000',
     inputsanitycalinvalid: 'digita il calibro > 0 fino a 20mm / 0,8"',
     inputsanityyousure: 'sei sicuro?',
     inputsanityok: 'OK',

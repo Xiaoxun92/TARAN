@@ -40,7 +40,7 @@ LSTR['fr'] = {
     defaultnewdescription: '[projet sans nom]',
 
     inputsanitydesc: 'donnez un nom au projet',
-    inputsanitydistinvalid: 'entrez la distance entre 5 et 3000',
+    inputsanitydistinvalid: 'entrez la distance entre 3 et 3000',
     inputsanitycalinvalid: 'entrez le calibre > 0 jusqu\'au 20mm / 0.8"',
     inputsanityyousure: 'c\'est vrai?',
     inputsanityok: 'OK',

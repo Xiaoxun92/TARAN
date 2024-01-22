@@ -40,7 +40,7 @@ LSTR['de'] = {
     defaultnewdescription: '[Namenloses Projekt]',
 
     inputsanitydesc: 'Wie soll das Projekt genannt werden?',
-    inputsanitydistinvalid: 'Zwischen 5 und 3000',
+    inputsanitydistinvalid: 'Zwischen 3 und 3000',
     inputsanitycalinvalid: 'Kaliber > 0 und bis 20mm / 0.8"',
     inputsanityyousure: 'Tatsaechlich?',
     inputsanityok: 'OK',

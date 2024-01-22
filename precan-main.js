@@ -202,17 +202,17 @@ function unhighlightButton(id) {
     el.className = el.className.replace(/\s*tb-btn-selected\s*/g,' ');;
 } // function unhighlightButton(id)
 
-function brightButton(id) {
+function grayOutButton(id) {
     var el = document.getElementById(id);
     if (!el.className.match(/tb-btn-bright/)) {
         el.className += ' tb-btn-bright';
     }
-} // function brightButton(id)
+} // function grayOutButton(id)
 
-function unbrightButton(id) {
+function ungrayOutButton(id) {
     var el = document.getElementById(id); 
     el.className = el.className.replace(/\s*tb-btn-bright\s*/g,' ');;
-} // function unbrightButton(id)
+} // function ungrayOutButton(id)
 
 function setActivePane(pane) {
     activepane = pane;

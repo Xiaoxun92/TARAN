@@ -77,7 +77,7 @@ function listenerValidateChange(evt) {
     
     var dist = document.getElementById('proj-input-dist').value;
     
-    if ( (dist <= 5) || (dist > 3000) ) {
+    if ( (dist < 3) || (dist > 3000) ) {
         document.getElementById('proj-input-dist-note').className = 'textcolorerror';
         setElementText('proj-input-dist-note', LSTX('inputsanitydistinvalid'));
         sane = false;
@@ -101,7 +101,7 @@ function listenerValidateChange(evt) {
         setElementText('proj-input-cal-note', LSTX('inputsanitycalinvalid'));
         sane = false;
     }
-    else if ( (cal < 5) || (cal > 15) ) {
+    else if ( (cal < 4) || (cal > 15) ) {
         document.getElementById('proj-input-cal-note').className = 'textcolorwarning';
         setElementText('proj-input-cal-note', LSTX('inputsanityyousure'));
     }
@@ -109,6 +109,8 @@ function listenerValidateChange(evt) {
         document.getElementById('proj-input-cal-note').className = 'textcolorokay';
         setElementText('proj-input-cal-note', LSTX('inputsanityok'));
     }
+
+    document.getElementById('proj-input-comment').value = stripXMLSpecials(document.getElementById('proj-input-comment').value);
     
     if (sane) {
         document.getElementById('proj-input-btn-ok').disabled = false;
@@ -132,6 +134,7 @@ function listenerApplyProjInfo(evt) {
     samevik.dist = document.getElementById('proj-input-dist').value;
     samevik.cal = document.getElementById('proj-input-cal').value;
     samevik.metric = (document.getElementById('proj-input-units').value == 'metric');
+    samevik.comment = stripXMLSpecials(document.getElementById('proj-input-comment').value);
     
     localStorage.setItem('defaults.dist', samevik.dist);
     localStorage.setItem('defaults.cal', samevik.cal);
@@ -155,6 +158,7 @@ function listenerEditProjInfo(evt) {
         document.getElementById('proj-input-cal').value = samevik.cal;
         document.getElementById('proj-input-units').value = (samevik.metric) ?
             'metric' : 'imp';
+        document.getElementById('proj-input-comment').value = stripXMLSpecials(samevik.comment);
     }
     hideElement('block-proj-info-display');
     unhideElement('block-proj-info-edit');
@@ -186,6 +190,23 @@ function displayTargetsInfo() {
     var infocont = document.getElementById('targets-info-container');
     while (infocont.lastChild) {
         infocont.removeChild(infocont.lastChild);
+    }
+
+    if (samevik.dist) {
+        // append "add target" row
+        sheetel = document.createElement('table');
+        sheetel.className = "table-info table-info-target";
+        tabody = document.createElement("tbody");
+        groupel = document.createElement('tr');
+        groupel.id = 'table-info-add-target';
+        cell = document.createElement('th');
+        celltext = document.createTextNode(LSTX('targetadd'));
+        cell.className = "table-addt";
+        cell.appendChild(celltext);
+        groupel.appendChild(cell);
+        tabody.appendChild(groupel);
+        sheetel.appendChild(tabody);
+        infocont.appendChild(sheetel);
     }
     
     var sheetel = null;
@@ -268,23 +289,6 @@ function displayTargetsInfo() {
         sheetel.appendChild(tabody);
         infocont.appendChild(sheetel);
     } // sheets loop
-
-    if (samevik.dist) {
-        // append "add target" row
-        sheetel = document.createElement('table');
-        sheetel.className = "table-info table-info-target";
-        tabody = document.createElement("tbody");
-        groupel = document.createElement('tr');
-        groupel.id = 'table-info-add-target';
-        cell = document.createElement('th');
-        celltext = document.createTextNode(LSTX('targetadd'));
-        cell.className = "table-addt";
-        cell.appendChild(celltext);
-        groupel.appendChild(cell);
-        tabody.appendChild(groupel);
-        sheetel.appendChild(tabody);
-        infocont.appendChild(sheetel);
-    }
 } // function displayTargetsInfo()
 
 function listenerTargetinfoClick(evt) {

@@ -94,8 +94,7 @@ function getImageBase64(image) {
 } // function getImageBase64(image)
 
 function valFromXMLnode(xmlnode, name, neednumber) {
-    // var n = ;
-    if ( (!xmlnode.getElementsByTagName(name)) || (!xmlnode.getElementsByTagName(name)[0].childNodes[0]) ) {
+    if ( (!xmlnode.getElementsByTagName(name)) || (!xmlnode.getElementsByTagName(name)[0]) || (!xmlnode.getElementsByTagName(name)[0].childNodes[0]) ) {
         console.log("fromXMLnode nonefound for " + name);
         return "";
     }
@@ -315,6 +314,7 @@ function toXMLSamevik() {
     result = result + ( (this.metric) ? getXMLs('metric', 'true') : getXMLs('metric', 'false') );
     result = result + getXMLs('cal', this.cal);
     result = result + getXMLs('dist', this.dist);
+    result = result + getXMLs('comment', escapeXML(this.comment));
     s = "";
     for (var i = 0; i < this.sheets.length; i++) {
         s = s + this.sheets[i].toXML(); 
@@ -329,7 +329,8 @@ function fromXMLSamevik(xml) {
     this.description = unescapeXML(valFromXMLnode(rootnode,'description'));
     this.metric = (valFromXMLnode(rootnode,'metric') == 'true');
     this.cal = valFromXMLnode(rootnode,'cal', true);
-    this.dist = valFromXMLnode(rootnode,'dist', true);
+    this.dist = valFromXMLnode(rootnode, 'dist', true);
+    this.comment = unescapeXML(valFromXMLnode(rootnode, 'comment'));
     
     imgloading_current = 0;
     imgloading_total = 0;
@@ -423,7 +424,7 @@ function synthStats() {
 
 function printUnit(value) {
     if (this.metric) {
-        return (Math.round(value));
+        return (value.toFixed(1));
     }
     else {
         return (value.toFixed(2));
@@ -467,6 +468,7 @@ function Samevik() {
     this.metric = true;
     this.cal = 0;
     this.dist = 0;
+    this.comment = "";
     this.sheets = new Array();
     // synthetic stats, all coordinates in real units, NOT px
     this.pts = new Array(); // of Shot objects
